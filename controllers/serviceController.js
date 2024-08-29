@@ -33,7 +33,7 @@ exports.add_service = async (req, res, next) => {
 exports.update_service = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { stt, nameService, descreption, price, duration, time, id_category } = req.body;
+        const {  nameService, descreption, price, duration, time, id_category } = req.body;
 
         // Kiểm tra dịch vụ có tồn tại không
         const service = await Service.findById(id);
@@ -55,7 +55,6 @@ exports.update_service = async (req, res, next) => {
             }
         }
 
-        service.stt = stt
         service.nameService = nameService;
         service.descreption = descreption;
         service.price = price;
