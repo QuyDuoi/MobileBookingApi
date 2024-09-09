@@ -4,7 +4,7 @@ const { Category } = require('../models/categoryModel');
 // Thêm dịch vụ
 exports.add_service = async (req, res, next) => {
     try {
-        const {stt, nameService, descreption, price, duration, time, id_category } = req.body;
+        const {stt, nameService, descreption, price, time, id_category } = req.body;
 
         // Kiểm tra nếu dịch vụ đã tồn tại
         const existingService = await Service.findOne({ nameService });
@@ -58,7 +58,6 @@ exports.update_service = async (req, res, next) => {
         service.nameService = nameService;
         service.descreption = descreption;
         service.price = price;
-        service.duration = duration
         service.time = time;
         service.id_category = id_category;
 
