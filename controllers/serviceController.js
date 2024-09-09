@@ -4,7 +4,7 @@ const { Category } = require('../models/categoryModel');
 // Thêm dịch vụ
 exports.add_service = async (req, res, next) => {
     try {
-        const {stt, nameService, descreption, price, time, id_category } = req.body;
+        const {nameService, descreption, price, time, id_category } = req.body;
 
         // Kiểm tra nếu dịch vụ đã tồn tại
         const existingService = await Service.findOne({ nameService });
@@ -20,7 +20,7 @@ exports.add_service = async (req, res, next) => {
             }
         }
 
-        const service = new Service({ stt, nameService, descreption, price, time, id_category });
+        const service = new Service({  nameService, descreption, price, time, id_category });
         const result = await service.save();
 
         res.status(201).json(result);
@@ -33,7 +33,7 @@ exports.add_service = async (req, res, next) => {
 exports.update_service = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const {  nameService, descreption, price, duration, time, id_category } = req.body;
+        const {  nameService, descreption, price, time, id_category } = req.body;
 
         // Kiểm tra dịch vụ có tồn tại không
         const service = await Service.findById(id);
