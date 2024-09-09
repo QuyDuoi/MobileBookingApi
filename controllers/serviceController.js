@@ -20,7 +20,7 @@ exports.add_service = async (req, res, next) => {
             }
         }
 
-        const service = new Service({ stt, nameService, descreption, price, duration, time, id_category });
+        const service = new Service({ stt, nameService, descreption, price, time, id_category });
         const result = await service.save();
 
         res.status(201).json(result);
