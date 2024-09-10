@@ -23,8 +23,8 @@ const {
   update_store,
   delete_store,
   get_list_store,
-  searchStore
 } = require("../controllers/storeController");
+const {update_hours_store} = require("../controllers/storeHoursController");
 
 const upload = require("../config/upload");
 
@@ -52,5 +52,8 @@ router.put("/updateStore/:id", upload.single("image"), update_store);
 router.delete("/deleteStore/:id", delete_store);
 router.get("/getListStore", get_list_store);
 router.post("/searchStore")
+
+// Restful Api thời gian mở đóng của hàng
+router.post("/updateHoursStore/:id", update_hours_store);
 
 module.exports = router;
