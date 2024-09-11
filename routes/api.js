@@ -25,6 +25,7 @@ const {
   get_list_store,
 } = require("../controllers/storeController");
 const {update_hours_store} = require("../controllers/storeHoursController");
+const { login } = require("../controllers/loginController");
 
 const upload = require("../config/upload");
 
@@ -55,5 +56,8 @@ router.post("/searchStore")
 
 // Restful Api thời gian mở đóng của hàng
 router.post("/updateHoursStore/:id", update_hours_store);
+
+// Đăng nhập
+router.post("/login", login);
 
 module.exports = router;
