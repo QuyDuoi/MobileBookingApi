@@ -120,7 +120,9 @@ exports.delete_employee = async (req, res, next) => {
 // Lấy danh sách nhân viên
 exports.get_list_employee = async (req, res, next) => {
   try {
-    const employees = await Employee.find().sort({ createdAt: -1 });
+    const employees = await Employee.find()
+      .sort({ createdAt: -1 })
+      .populate("id_store");
 
     res.status(200).json(employees);
   } catch (error) {

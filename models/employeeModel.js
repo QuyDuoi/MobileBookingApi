@@ -8,7 +8,7 @@ const employeeSchema = new mongoose.Schema(
     phoneNumber: { type: String },
     address: { type: String },
     image: { type: String },
-    userRole: { type: String, default: 'staff' },
+    userRole: { type: String, enum: ["admin", "storeManagement", "staff"], default: "staff" },
     id_store: {type: mongoose.Schema.Types.ObjectId, ref: 'Store'},
   },
   {

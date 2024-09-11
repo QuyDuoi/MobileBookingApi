@@ -5,7 +5,6 @@ const serviceSchema = new mongoose.Schema(
     descreption: { type: String, require: true },
     price: { type: Number },
     duration: { type: String },
-    time: { type: String },
     id_category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   },
   {
