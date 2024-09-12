@@ -1,5 +1,5 @@
 const { mongoose } = require("./db");
-const StoreHours = require("./storeHoursModel");
+const { StoreHours } = require("./storeHoursModel");
 
 const storeSchema = new mongoose.Schema(
   {
