@@ -61,7 +61,7 @@ router.post("/searchStore")
 router.post("/addBooking", add_booking);
 router.put("/updateBooking/:id", update_booking);
 router.delete("/deleteBooking/:id", delete_booking);
-router.get("/getListBooking", get_bookings);
+router.post("/getListBooking", get_bookings);
 
 // Restful Api thời gian mở đóng của hàng
 router.post("/updateHoursStore/:id", update_hours_store);
