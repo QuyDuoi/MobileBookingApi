@@ -46,10 +46,12 @@ exports.add_employee = async (req, res, next) => {
       id_store,
     });
     const result = await employee.save();
-
+    await result.populate('id_store');
     res.status(201).json(result);
   } catch (error) {
     res.status(400).json({ msg: error.message });
+    console.log(error);
+    
   }
 };
 
@@ -94,7 +96,7 @@ exports.update_employee = async (req, res, next) => {
     }
 
     const result = await employee.save();
-
+    await result.populate('id_store').execPopulate();
     res.status(200).json(result);
   } catch (error) {
     res.status(400).json({ msg: error.message });

@@ -27,6 +27,8 @@ const {
 const {
   add_booking, update_booking, delete_booking, get_bookings
 } = require("../controllers/bookingsController");
+const { add_product, update_product, delete_product, get_list_product } = require("../controllers/productController");
+const { add_invoice, update_invoice, delete_invoice, get_list_invoice} = require("../controllers/invoiceController");
 const {update_hours_store} = require("../controllers/storeHoursController");
 const { login } = require("../controllers/loginController");
 
@@ -65,6 +67,18 @@ router.post("/getListBooking", get_bookings);
 
 // Restful Api thời gian mở đóng của hàng
 router.post("/updateHoursStore/:id", update_hours_store);
+
+// Restful Api Sản phẩm
+router.post("/addProduct", add_product);
+router.put("/updateProduct/:id", update_product);
+router.delete("/deleteProduct/:id", delete_product);
+router.post("/getListProduct", get_list_product);
+
+// Restful Api Hóa đơn
+router.post("/addInvoice", add_invoice);
+router.put("/updateInvoice/:id", update_invoice);
+router.delete("/deleteInvoice/:id", delete_invoice);
+router.post("/getListInvoice", get_list_invoice);
 
 // Đăng nhập
 router.post("/login", login);
