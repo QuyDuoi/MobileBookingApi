@@ -5,6 +5,8 @@ const { Store } = require("../models/storeModel");
 exports.add_product = async (req, res) => {
   try {
     const { name, price, quantity, description, id_store } = req.body;
+    console.log(req.body);
+
     let image = "";
 
     // Kiểm tra nếu có file ảnh upload
@@ -22,6 +24,7 @@ exports.add_product = async (req, res) => {
 
     // Kiểm tra nếu cửa hàng có tồn tại
     const store = await Store.findById(id_store);
+
     if (!store) {
       return res.status(400).json({ msg: "Cửa hàng không tồn tại" });
     }
@@ -94,7 +97,9 @@ exports.delete_product = async (req, res) => {
 // Lấy danh sách sản phẩm
 exports.get_list_product = async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 }).populate('id_store');
+    const products = await Product.find()
+      .sort({ createdAt: -1 })
+      .populate("id_store");
 
     res.status(200).json(products);
   } catch (error) {

@@ -87,6 +87,7 @@ exports.update_employee = async (req, res, next) => {
     employee.phoneNumber = phoneNumber;
     employee.address = address;
     employee.id_store = id_store;
+    employee.userRole = userRole;
 
     // Cập nhật ảnh nếu có file mới
     if (req.file) {

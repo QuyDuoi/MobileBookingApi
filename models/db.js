@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-let local = ''
+let local = 'mongodb+srv://mobileBookingService:Tq1tRCvjmeotvpIK@mobilebooking.s8oaz.mongodb.net/Booking?retryWrites=true&w=majority'
 const connect = async() => {
         try {
-                await mongoose.connect('mongodb://127.0.0.1:27017/MobileBooking',
+                await mongoose.connect(local,
                 {
                         useNewUrlParser: true,
                         useUnifiedTopology: true,
