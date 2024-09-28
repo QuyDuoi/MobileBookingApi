@@ -94,7 +94,7 @@ exports.update_employee = async (req, res, next) => {
       employee.image = `${req.protocol}://${req.get("host")}/public/uploads/${
         req.file.filename
       }`;
-    }
+    } 
 
     const result = await employee.save();
     await result.populate('id_store').execPopulate();

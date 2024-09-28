@@ -1,6 +1,5 @@
 const { Invoice } = require("../models/invoiceModel");
 const { Product } = require("../models/productModel");
-const { Service } = require("../models/serviceModel");
 const { Store } = require("../models/storeModel");
 
 // Thêm hóa đơn mới và trừ số lượng sản phẩm
@@ -222,3 +221,210 @@ exports.get_list_invoice = async (req, res) => {
     res.status(400).json({ msg: error.message });
   }
 };
+
+// Hàm lấy dữ liệu doanh thu 6 tháng gần nhất
+const getLastSixMonthsRevenue = async () => {
+  const currentDate = new Date();
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5); // 6 tháng bao gồm cả tháng hiện tại
+
+  // Tạo danh sách các tháng trong 6 tháng gần nhất
+  const monthsList = [];
+  for (let i = 0; i < 6; i++) {
+    const month = new Date(sixMonthsAgo.getFullYear(), sixMonthsAgo.getMonth() + i, 1);
+    const monthString = `${month.getMonth() + 1}-${month.getFullYear()}`; // Định dạng MM-YYYY
+    monthsList.push(monthString);
+  }
+
+  try {
+    const revenueData = await Invoice.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: sixMonthsAgo, $lte: currentDate },
+          paymentStatus: "paid", // Chỉ tính những hóa đơn đã thanh toán
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          totalRevenue: { $sum: "$totalAmount" }, // Tính tổng doanh thu
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          month: {
+            $concat: [
+              { $toString: "$_id.month" },
+              "-",
+              { $toString: "$_id.year" },
+            ],
+          },
+          totalRevenue: 1,
+        },
+      },
+      {
+        $sort: { month: 1 },
+      },
+    ]);
+
+    // Tạo một map từ dữ liệu doanh thu đã có
+    const revenueMap = revenueData.reduce((acc, item) => {
+      acc[item.month] = item.totalRevenue;
+      return acc;
+    }, {});
+
+    // Trả về danh sách 6 tháng với giá trị 0 cho những tháng không có doanh thu
+    const result = monthsList.map(month => ({
+      month,
+      totalRevenue: revenueMap[month] || 0,
+    }));
+
+    return result;
+  } catch (error) {
+    throw new Error("Error fetching revenue data: " + error);
+  }
+};
+
+// Hàm lấy dữ liệu doanh thu của 4 tuần trong tháng hiện tại
+const getWeeklyRevenueInCurrentMonth = async () => {
+  const currentDate = new Date();
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+  // Tạo danh sách các tuần trong tháng hiện tại
+  const weeksList = [];
+  let weekStart = new Date(startOfMonth);
+  let weekEnd;
+
+  // Tạo danh sách các tuần bắt đầu từ tuần 1 đến tuần 4 trong tháng
+  while (weekStart <= endOfMonth) {
+    weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    // Giới hạn tuần cuối cùng trong tháng
+    if (weekEnd > endOfMonth) {
+      weekEnd = new Date(endOfMonth);
+    }
+
+    weeksList.push({
+      start: new Date(weekStart),
+      end: new Date(weekEnd),
+      weekLabel: `Week ${weeksList.length + 1}`,
+    });
+
+    // Di chuyển đến tuần tiếp theo
+    weekStart.setDate(weekStart.getDate() + 7);
+  }
+
+  try {
+    // Lấy dữ liệu doanh thu theo tuần trong tháng hiện tại
+    const revenueData = await Invoice.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+          paymentStatus: "paid", // Chỉ tính những hóa đơn đã thanh toán
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            week: { $isoWeek: "$createdAt" }, // Lấy số tuần trong năm
+          },
+          totalRevenue: { $sum: "$totalAmount" }, // Tính tổng doanh thu trong tuần
+        },
+      },
+    ]);
+
+    // Tạo một map để tra cứu doanh thu theo tuần
+    const revenueMap = revenueData.reduce((acc, item) => {
+      acc[item._id.week] = item.totalRevenue;
+      return acc;
+    }, {});
+
+    // Lấy số tuần hiện tại
+    const currentWeek = Math.ceil(currentDate.getDate() / 7);
+
+    // Trả về dữ liệu doanh thu cho từng tuần trong tháng
+    const result = weeksList.map((week, index) => ({
+      week: week.weekLabel,
+      totalRevenue: revenueMap[currentWeek - index] || 0, // Doanh thu hoặc 0 nếu không có
+    }));
+
+    return result;
+  } catch (error) {
+    throw new Error("Error fetching weekly revenue data: " + error);
+  }
+};
+
+// Hàm lấy dữ liệu doanh thu theo ngày truyền vào
+const getRevenueByDate = async (year, month, day) => {
+  // Tạo đối tượng ngày bắt đầu và kết thúc của ngày cụ thể
+  const startOfDay = new Date(year, month - 1, day); // tháng bắt đầu từ 0
+  const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999); // Kết thúc ngày
+
+  try {
+    // Lấy dữ liệu doanh thu cho ngày được chỉ định
+    const revenueData = await Invoice.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfDay, $lte: endOfDay }, // Lọc theo ngày
+          paymentStatus: "paid", // Chỉ tính những hóa đơn đã thanh toán
+        },
+      },
+      {
+        $group: {
+          _id: null, // Không cần nhóm theo bất kỳ field nào khác ngoài tổng doanh thu
+          totalRevenue: { $sum: "$totalAmount" }, // Tính tổng doanh thu
+        },
+      },
+    ]);
+
+    // Nếu không có dữ liệu, doanh thu là 0
+    const totalRevenue = revenueData.length > 0 ? revenueData[0].totalRevenue : 0;
+
+    // Trả về doanh thu của ngày
+    return {
+      date: `${day}-${month}-${year}`,
+      totalRevenue: totalRevenue
+    };
+  } catch (error) {
+    throw new Error("Error fetching revenue data: " + error);
+  }
+};
+
+exports.get_revenue_day = async (req, res) => {
+  const { year, month, day } = req.query; // Lấy ngày, tháng, năm từ query parameters
+  if (!year || !month || !day) {
+    return res.status(400).json({ error: 'Missing year, month, or day parameters' });
+  }
+
+  try {
+    const data = await getRevenueByDate(parseInt(year), parseInt(month), parseInt(day));
+    res.json(data); // Trả về JSON để frontend có thể sử dụng
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+exports.get_revenue_four_week = async (req, res) => {
+  try {
+    const data = await getWeeklyRevenueInCurrentMonth();
+    res.json(data); // Trả về JSON để frontend có thể sử dụng
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+exports.get_revenue_six_months = async (req, res) => {
+  try {
+    const data = await getLastSixMonthsRevenue();
+    res.json(data); // Trả về JSON để frontend có thể sử dụng
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

@@ -25,11 +25,27 @@ const {
   get_list_store,
 } = require("../controllers/storeController");
 const {
-  add_booking, update_booking, delete_booking, get_bookings
+  add_booking,
+  update_booking,
+  delete_booking,
+  get_bookings,
 } = require("../controllers/bookingsController");
-const { add_product, update_product, delete_product, get_list_product } = require("../controllers/productController");
-const { add_invoice, update_invoice, delete_invoice, get_list_invoice} = require("../controllers/invoiceController");
-const {update_hours_store} = require("../controllers/storeHoursController");
+const {
+  add_product,
+  update_product,
+  delete_product,
+  get_list_product,
+} = require("../controllers/productController");
+const {
+  add_invoice,
+  update_invoice,
+  delete_invoice,
+  get_list_invoice,
+  get_revenue_six_months,
+  get_revenue_four_week,
+  get_revenue_day
+} = require("../controllers/invoiceController");
+const { update_hours_store } = require("../controllers/storeHoursController");
 const { login } = require("../controllers/loginController");
 
 const upload = require("../config/upload");
@@ -57,7 +73,7 @@ router.post("/addStore", upload.single("image"), add_store);
 router.put("/updateStore/:id", upload.single("image"), update_store);
 router.delete("/deleteStore/:id", delete_store);
 router.get("/getListStore", get_list_store);
-router.post("/searchStore")
+router.post("/searchStore");
 
 // Restful Api Booking
 router.post("/addBooking", add_booking);
@@ -79,6 +95,9 @@ router.post("/addInvoice", add_invoice);
 router.put("/updateInvoice/:id", update_invoice);
 router.delete("/deleteInvoice/:id", delete_invoice);
 router.get("/getListInvoice", get_list_invoice);
+router.get("/getRevenueSixMonths", get_revenue_six_months);
+router.get("/getRevenueFourWeek", get_revenue_four_week);
+router.get("/getRevenueDay", get_revenue_day);
 
 // Đăng nhập
 router.post("/login", login);
