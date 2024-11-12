@@ -79,7 +79,7 @@ router.post("/searchStore");
 router.post("/addBooking", add_booking);
 router.put("/updateBooking/:id", update_booking);
 router.delete("/deleteBooking/:id", delete_booking);
-router.post("/getListBooking", get_bookings);
+router.get("/getListBooking", get_bookings);
 
 // Restful Api thời gian mở đóng của hàng
 router.post("/updateHoursStore/:id", update_hours_store);
@@ -88,7 +88,7 @@ router.post("/updateHoursStore/:id", update_hours_store);
 router.post("/addProduct", upload.single("image"), add_product);
 router.put("/updateProduct/:id", upload.single("image"), update_product);
 router.delete("/deleteProduct/:id", delete_product);
-router.post("/getListProduct", get_list_product);
+router.get("/getListProduct", get_list_product);
 
 // Restful Api Hóa đơn
 router.post("/addInvoice", add_invoice);

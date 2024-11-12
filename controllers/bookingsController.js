@@ -55,8 +55,8 @@ exports.get_bookings = async (req, res) => {
     const { userId } = req.body; // Lấy ID người dùng từ token hoặc session
     console.log(userId);
 
-    const user = await Employee.findById(userId).populate("id_store");
 
+    const user = await Employee.find().sort({ createdAt: -1 });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
